@@ -1,0 +1,191 @@
+###########
+###grfana
+###########
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: grafana-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - grafana.cluster.prageethw.co
+  gateways:
+  - grafana-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: grafana
+        port:
+          number: 3000
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: grafana-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-grafana
+      protocol: HTTP
+    hosts:
+    - grafana.cluster.prageethw.co
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https-grafana
+      protocol: HTTP #need to set this as http to enable elb ssl offloading.   
+    hosts:
+    - grafana.cluster.prageethw.co
+---
+########
+### prometheus
+########
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: prometheus-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - prom.cluster.prageethw.co
+  gateways:
+  - prometheus-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: prometheus
+        port:
+          number: 9090
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: prometheus-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-prometheus
+      protocol: HTTP
+    hosts:
+    - prom.cluster.prageethw.co
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https-prometheus
+      protocol: HTTP #need to set this as http to enable elb ssl offloading.   
+    hosts:
+    - prom.cluster.prageethw.co
+---
+########
+### tracing tool is jaeger
+########
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: tracing-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - jaeger.cluster.prageethw.co
+  gateways:
+  - tracing-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: tracing
+        port:
+          number: 80
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: tracing-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-tracing
+      protocol: HTTP
+    hosts:
+    - jaeger.cluster.prageethw.co
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https-tracing
+      protocol: HTTP #need to set this as http to enable elb ssl offloading.   
+    hosts:
+    - jaeger.cluster.prageethw.co
+---
+########
+### kiali
+########
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kiali-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - kiali.cluster.prageethw.co
+  gateways:
+  - kiali-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: kiali
+        port:
+          number: 20001
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: kiali-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-kiali
+      protocol: HTTP
+    hosts:
+    - kiali.cluster.prageethw.co
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https-kiali
+      protocol: HTTP #need to set this as http to enable elb ssl offloading.   
+    hosts:
+    - kiali.cluster.prageethw.co
