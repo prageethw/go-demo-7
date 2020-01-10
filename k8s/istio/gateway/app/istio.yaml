@@ -1,10 +1,10 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: go-demo-7
+  name: go-demo-8
 spec:
   hosts:
-  - go-demo.cluster.prageethw.co
+  - go-demo-8.cluster.prageethw.co
   gateways:
   - go-demo-7
   http:
@@ -31,7 +31,8 @@ spec:
       name: http-go-demo-7
       protocol: HTTP
     hosts:
-    - go-demo.cluster.prageethw.co
+    - go-demo-7.cluster.prageethw.co
+    - go-demo-8.cluster.prageethw.co
     tls:
       httpsRedirect: true
   - port:
@@ -39,4 +40,24 @@ spec:
       name: https-go-demo-7
       protocol: HTTP #need to set this as http to enable elb ssl offloading.   
     hosts:
-    - go-demo.cluster.prageethw.co
+    - go-demo-7.cluster.prageethw.co
+    - go-demo-8.cluster.prageethw.co
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: go-demo-7
+spec:
+  hosts:
+  - go-demo-7.cluster.prageethw.co
+  gateways:
+  - go-demo-7
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: go-demo-7
+        port:
+          number: 80
