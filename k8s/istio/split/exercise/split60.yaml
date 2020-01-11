@@ -4,7 +4,7 @@ metadata:
   name: go-demo-7
 spec:
   hosts:
-  - go-demo-7.acme.com
+  - go-demo-7.cluster.prageethw.co
   gateways:
   - go-demo-7
   http:

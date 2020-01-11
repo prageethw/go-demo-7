@@ -20581,7 +20581,7 @@ metadata:
     # Increase the ELB idle timeout to avoid issues with WebSockets or Server-Sent Events.
     service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
     #put your AWS SSL cert arn:aws:acm:us-east-2:326444312331:certificate/3024702c-93a7-45df-8d16-97e086228014 here
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-2:326444312331:certificate/b5fe8a73-2157-4526-bfa5-239a8fd6dc5f"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-2:326444312331:certificate/aacae63e-bfdd-4930-893e-0da56b3961c2"
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
   labels:
     app: istio-ingressgateway
