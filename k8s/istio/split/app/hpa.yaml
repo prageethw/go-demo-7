@@ -1,0 +1,64 @@
+# ---
+# apiVersion: autoscaling/v2beta1
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: go-demo-7
+#   namespace: go-demo-7
+# spec:
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: go-demo-7-primary
+#   minReplicas: 3
+#   maxReplicas: 10
+#   metrics:
+#     - type: Object
+#       object:
+#         metricName: tps_service_requests
+#         target:
+#           apiVersion: v1
+#           kind: Service
+#           name: go-demo-7
+#         targetValue: 50m
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: go-demo-7
+  namespace: go-demo-7
+  annotations:
+    metric-config.object.istio-requests-total.prometheus/per-replica: "true"
+    metric-config.object.istio-requests-total.prometheus/query: |
+      sum(
+          rate(
+              istio_requests_total{
+                destination_service_name="go-demo-7",
+                destination_workload_namespace="go-demo-7",
+                reporter="destination"
+              }[1m]
+          )
+      ) /
+      count(
+        count(
+          container_memory_usage_bytes{
+            namespace="go-demo-7",
+          pod_name=~"go-demo-7-primary.*"
+          }
+        ) by (pod_name)
+      )
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: go-demo-7-primary
+  metrics:
+    - type: Object
+      object:
+        metricName: istio-requests-total
+        target:
+          apiVersion: v1
+          kind: Pod
+          name: go-demo-7-primary
+        targetValue: 10
