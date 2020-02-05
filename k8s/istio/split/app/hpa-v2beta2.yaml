@@ -1,0 +1,126 @@
+
+# #### Below is deprecated as per here https://github.com/zalando-incubator/kube-metrics-adapter while external metrics supported.
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: go-demo-7
+  namespace: go-demo-7
+  annotations:
+    # # metric-config.<metricType>.<metricName>.<collectorName>/<configKey>
+    # # metric-config.object.istio-requests-per-replica.prometheus/per-replica: "true" #note: this will automaticaly generate average per pod,similar to AverageValue.
+    # metric-config.object.istio-requests-per-replica.prometheus/query: |
+    #   sum(
+    #       rate(
+    #           istio_requests_total{
+    #             destination_service_name="go-demo-7",
+    #             destination_workload_namespace="go-demo-7",
+    #             reporter="destination"
+    #           }[1m]
+    #       )
+    #   ) /
+    #   count(
+    #     count(
+    #       container_memory_usage_bytes{
+    #         namespace="go-demo-7",
+    #       pod_name=~"go-demo-7-primary.*"
+    #       }
+    #     ) by (pod_name)
+    #   )
+    # metric-config.object.istio-requests-error-rate.prometheus/per-replica: "true"
+    metric-config.object.istio-requests-error-rate.prometheus/query: |
+      sum(rate(istio_requests_total{destination_workload="go-demo-7-primary",
+               destination_workload_namespace="go-demo-7", reporter="destination",response_code=~"5.*"}[1m])) 
+      / 
+      sum(rate(istio_requests_total{destination_workload="go-demo-7-primary", 
+               destination_workload_namespace="go-demo-7",reporter="destination"}[1m]) > 0)* 100
+      or
+      sum(rate(istio_requests_total{destination_workload="go-demo-7-primary", 
+               destination_workload_namespace="go-demo-7",reporter="destination"}[1m])) > bool 0 * 100
+    ######## 
+    # This annotation is optional.
+    # If specified, then this prometheus server is used,
+    # instead of the prometheus server specified as the CLI argument `--prometheus-server`.
+    # metric-config.external.prometheus-query.prometheus/prometheus-server: http://prometheus.my-namespace.svc
+    # metric-config.<metricType>.<metricName>.<collectorName>/<configKey>
+    # <configKey> == query-name
+    #########
+    metric-config.external.prometheus-query.prometheus/istio-requests-per-replica: |
+      sum(rate(istio_requests_total{destination_service_name="go-demo-7",destination_workload_namespace="go-demo-7",
+                reporter="destination"}[1m])) 
+      /
+      count(count(container_memory_usage_bytes{namespace="go-demo-7",pod_name=~"go-demo-7-primary.*"}) by (pod_name))
+    metric-config.external.prometheus-query.prometheus/istio-requests-average-resp-time: |
+      sum(rate(istio_request_duration_seconds_sum{destination_workload="go-demo-7-primary", reporter="destination"}[1m])) 
+      / 
+      sum(rate(istio_request_duration_seconds_count{destination_workload="go-demo-7-primary", reporter="destination"}[1m]) > 0)
+      or
+      sum(rate(istio_request_duration_seconds_count{destination_workload="go-demo-7-primary", reporter="destination"}[1m])) 
+      > bool 0 
+    metric-config.external.prometheus-query.prometheus/istio-requests-max-resp-time: |
+      histogram_quantile(0.95, 
+                  sum(irate(istio_request_duration_seconds_bucket{destination_workload="go-demo-7-primary"}[1m])) by (le)) > 0
+      or
+      histogram_quantile(0.95, 
+                  sum(irate(istio_request_duration_seconds_bucket{destination_workload="go-demo-7-primary"}[1m])) by (le)) > bool 0
+    ########
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: go-demo-7-primary
+  metrics:
+  # - type: Object
+  #   object:
+  #     metric:
+  #       name: istio-requests-per-replica
+  #     describedObject:
+  #       apiVersion: v1 #make sure you check the api version on the targeted resource using get command.
+  #       kind: Pod # note Pod can be used as resource kind for kube-metrics-adapter.
+  #       name: go-demo-7-primary
+  #     target:
+  #       type: Value
+  #       value: 5
+  - type: External
+    external:
+      metric:
+        name: prometheus-query
+        selector:
+          matchLabels:
+            query-name: istio-requests-per-replica
+      target:
+        type: AverageValue
+        value: 5
+  - type: External
+    external:
+      metric:
+        name: prometheus-query
+        selector:
+          matchLabels:
+            query-name: istio-requests-average-resp-time
+      target:
+        type: Value
+        value: 100m
+  - type: External
+    external:
+      metric:
+        name: prometheus-query
+        selector:
+          matchLabels:
+            query-name: istio-requests-average-resp-time
+      target:
+        type: Value
+        value: 100m
+  - type: Object
+    object:
+      metric:
+        name: istio-requests-error-rate
+      describedObject:
+        apiVersion: v1 #make sure you check the api version on the targeted resource using get command.
+        kind: Pod # note Pod can be used as resource kind for kube-metrics-adapter.
+        name: go-demo-7-primary
+      target:
+        type: Value
+        value: 5
