@@ -109,7 +109,7 @@ spec:
         name: prometheus-query
         selector:
           matchLabels:
-            query-name: istio-requests-average-resp-time
+            query-name: istio-requests-max-resp-time
       target:
         type: Value
         value: 100m
