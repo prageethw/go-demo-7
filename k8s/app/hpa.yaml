@@ -1,10 +1,16 @@
 ---
 
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: go-demo-7
   namespace: go-demo-7
+  annotations:
+    metric-config.external.prometheus-query.prometheus/istio-requests-per-replica: |
+      sum(rate(istio_requests_total{destination_service_name="go-demo-7-primary",destination_workload_namespace="go-demo-7",
+                reporter="destination"}[1m])) 
+      /
+      count(count(container_memory_usage_bytes{namespace="go-demo-7",pod_name=~"go-demo-7-primary.*"}) by (pod_name))
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -16,8 +22,22 @@ spec:
   - type: Resource
     resource:
       name: cpu
-      targetAverageUtilization: 80
+      target:
+        type: Utilization
+        averageUtilization: 80
   - type: Resource
     resource:
       name: memory
-      targetAverageUtilization: 80
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: External
+    external:
+      metric:
+        name: prometheus-query
+        selector:
+          matchLabels:
+            query-name: istio-requests-per-replica
+      target:
+        type: AverageValue
+        value: 5
