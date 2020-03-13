@@ -48,18 +48,18 @@ metadata:
       /
       count(count(container_memory_usage_bytes{namespace="go-demo-7",pod_name=~"go-demo-7-primary.*"}) by (pod_name)) OR on() vector(0)
     metric-config.external.prometheus-query.prometheus/istio-requests-average-resp-time: |
-      sum(rate(istio_request_duration_seconds_sum{destination_workload="go-demo-7-primary", reporter="destination"}[1m])) 
+      sum(rate(istio_request_duration_milliseconds_sum{destination_workload="go-demo-7-primary", reporter="destination"}[1m]))
       / 
-      sum(rate(istio_request_duration_seconds_count{destination_workload="go-demo-7-primary", reporter="destination"}[1m])) > 0
+      sum(rate(istio_request_duration_milliseconds_count{destination_workload="go-demo-7-primary", reporter="destination"}[1m]))/1000 > 0
       or
-      sum(rate(istio_request_duration_seconds_count{destination_workload="go-demo-7-primary", reporter="destination"}[1m])) 
+      sum(rate(istio_request_duration_milliseconds_count{destination_workload="go-demo-7-primary", reporter="destination"}[1m]))/1000
       > bool 0 
     metric-config.external.prometheus-query.prometheus/istio-requests-max-resp-time: |
       histogram_quantile(0.95, 
-                  sum(irate(istio_request_duration_seconds_bucket{destination_workload="go-demo-7-primary"}[1m])) by (le)) > 0
+                  sum(irate(istio_request_duration_milliseconds_bucket{destination_workload="go-demo-7-primary"}[1m])) by (le))/1000 > 0
       or
       histogram_quantile(0.95, 
-                  sum(irate(istio_request_duration_seconds_bucket{destination_workload="go-demo-7-primary"}[1m])) by (le)) > bool 0
+                  sum(irate(istio_request_duration_milliseconds_bucket{destination_workload="go-demo-7-primary"}[1m])) by (le))/1000 > bool 0
     ########
 spec:
   maxReplicas: 10
@@ -109,7 +109,7 @@ spec:
             query-name: istio-requests-max-resp-time
       target:
         type: Value
-        value: 100m
+        value: 150m
   - type: Object
     object:
       metric:
