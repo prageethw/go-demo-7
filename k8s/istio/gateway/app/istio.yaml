@@ -5,6 +5,7 @@ metadata:
 spec:
   hosts:
   - go-demo-8.cluster.prageethw.co
+  - go-demo-7 # internal comms
   gateways:
   - go-demo-7
   http:
@@ -16,7 +17,6 @@ spec:
         host: go-demo-7
         port:
           number: 80
-
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -50,6 +50,7 @@ metadata:
 spec:
   hosts:
   - go-demo-7.cluster.prageethw.co
+  - go-demo-7 # internal comms
   gateways:
   - go-demo-7
   http:
