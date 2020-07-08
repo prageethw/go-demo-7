@@ -3,13 +3,13 @@
 apiVersion: flagger.app/v1beta1
 kind: Canary
 metadata:
-  name: go-demo-7
+  name: go-demo-7-app
 spec:
   provider: istio
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: go-demo-7
+    name: go-demo-7-app
   progressDeadlineSeconds: 60
   autoscalerRef:
     apiVersion: autoscaling/v2beta1
