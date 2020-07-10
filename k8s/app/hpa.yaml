@@ -53,7 +53,7 @@ spec:
           matchLabels:
             query-name: istio-requests-per-replica
       target:
-        type: AverageValue
+        type: Value
         value: 5
   - type: External
     external:
