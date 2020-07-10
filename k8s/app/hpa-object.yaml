@@ -54,7 +54,7 @@ spec:
         kind: Pod # note Pod can be used as resource kind for kube-metrics-adapter.
         name: go-demo-7-app
       target:
-        type: AverageValue
+        type: Value
         value: 100m
   - type: Object
     object:
@@ -65,7 +65,7 @@ spec:
         kind: Pod # note Pod can be used as resource kind for kube-metrics-adapter.
         name: go-demo-7-app
       target:
-        type: AverageValue
+        type: Value
         value: 500m
   - type: Object
     object:
@@ -76,7 +76,7 @@ spec:
         kind: Pod # note Pod can be used as resource kind for kube-metrics-adapter.
         name: go-demo-7-app
       target:
-        type: AverageValue
+        type: Value
         value: 250m
   - type: Object
     object:
@@ -87,5 +87,5 @@ spec:
         kind: Pod # note Pod can be used as resource kind for kube-metrics-adapter.
         name: go-demo-7-app
       target:
-        type: AverageValue
+        type: Value
         value: 5
