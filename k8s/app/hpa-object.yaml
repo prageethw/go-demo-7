@@ -22,7 +22,7 @@ metadata:
       sum(rate(istio_request_duration_milliseconds_count{destination_workload=~"go-demo-7-app.*", reporter="destination"}[5m])))/1000 > 0 or on() vector(0)
     metric-config.object.istio-requests-max-resp-time.prometheus/query: |
       histogram_quantile(0.95, 
-                  sum(irate(istio_request_duration_milliseconds_bucket{destination_workload=~"go-demo-7-app.*"}[5m])) by (le))/1000 > 0  or on() vector(0)
+                  sum(irate(istio_request_duration_milliseconds_bucket{destination_workload=~"go-demo-7-app.*"}[1m])) by (le))/1000 > 0  or on() vector(0)
 
 spec:
   scaleTargetRef:
