@@ -11,7 +11,7 @@ spec:
       name: http-go-demo-7
       protocol: HTTP
     hosts:
-    - go-demo-7.cluster.prageethw.co
+    - go-demo-7.cluster.prageethw.com
     tls:
       httpsRedirect: true
   - port:
@@ -19,4 +19,4 @@ spec:
       name: https-go-demo-7
       protocol: HTTP #need to set this as http to enable elb ssl offloading.   
     hosts:
-    - go-demo-7.cluster.prageethw.co
+    - go-demo-7.cluster.prageethw.com

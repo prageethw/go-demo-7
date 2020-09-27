@@ -21,7 +21,7 @@ spec:
     gateways:
     - go-demo-7
     hosts:
-    - go-demo-7.cluster.prageethw.co
+    - go-demo-7.cluster.prageethw.com
   analysis:
     interval: 1m
     threshold: 5
