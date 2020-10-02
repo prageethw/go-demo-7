@@ -11,6 +11,7 @@ metadata:
     release: "go-demo-7"
     heritage: "Tiller"
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: go-demo-7-db
