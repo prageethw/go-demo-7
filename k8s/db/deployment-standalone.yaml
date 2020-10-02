@@ -65,8 +65,12 @@ spec:
         - name: data
           mountPath: /bitnami/mongodb
         resources:
-          {}
-          
+          requests:
+            memory: "100Mi"
+            cpu: "300m"
+          limits:
+            memory: "400Mi"
+            cpu: "400m"
       volumes:
       - name: data
         persistentVolumeClaim:
